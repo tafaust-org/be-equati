@@ -1,0 +1,23 @@
+.env
+.env.sample
+.eslintrc.js
+.gitignore
+.prettierrc
+build-docker.sh
+Dockerfile
+stack.yaml
+start-postgres.sh
+node_modules/
+.idea/
+.github/
+
+# yarn v2
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/unplugged
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

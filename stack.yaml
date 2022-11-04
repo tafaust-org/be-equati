@@ -1,0 +1,110 @@
+version: "3.7"
+services:
+  caddy2:
+    image: caddy:2.5.2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    configs:
+      - source: Caddyfile-ehwplus
+        target: /etc/caddy/Caddyfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+        delay: 5s
+      replicas: 1
+
+  be-contract:
+    image: ghcr.io/ehwplus/be-contract:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_PORT=8080
+      - DB_HOST=postgres-contract
+      - DB_USER_FILE=/run/secrets/db_username
+      - DB_PASS_FILE=/run/secrets/db_password
+      - API_KEY_FILE=/run/secrets/contract_api_key
+      - DB_NAME=contract
+      - STATISTICS_MIN_SAMPLE_SIZE=30
+    secrets:
+      - db_username
+      - db_password
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+        delay: 5s
+      replicas: 2
+
+  postgres-contract:
+    image: postgres:14.5
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=contract
+      - POSTGRES_USER_FILE=/run/secrets/db_username
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - PGDATA=/var/lib/postgresql/data
+    secrets:
+      - db_username
+      - db_password
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      replicas: 1
+
+  pgadmin:
+    image: dpage/pgadmin4:6.14
+    ports:
+      - "5555:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=mail@thomas-hesse.eu
+      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_default_password
+    secrets:
+      - pgadmin_default_password
+    volumes:
+      - pgadmin_data:/pgadmin
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      replicas: 1
+
+  grafana:
+    image: grafana/grafana:9.18
+    ports:
+      - "5656:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 15s
+      replicas: 1
+
+configs:
+  Caddyfile-ehwplus:
+    external: true
+
+secrets:
+  db_username:
+    external: true
+  db_password:
+    external: true
+  pgadmin_default_password:
+    external: true
+  contract_api_key:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:
+  dbdata:
+  pgadmin_data:
+  grafana_data:
