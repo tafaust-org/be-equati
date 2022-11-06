@@ -18,8 +18,8 @@ services:
         delay: 5s
       replicas: 1
 
-  be-contract:
-    image: ghcr.io/ehwplus/be-contract:latest
+  be-game:
+    image: ghcr.io/ehwplus/be-game:latest
     ports:
       - "8080:8080"
     environment:
@@ -28,8 +28,7 @@ services:
       - DB_USER_FILE=/run/secrets/db_username
       - DB_PASS_FILE=/run/secrets/db_password
       - API_KEY_FILE=/run/secrets/contract_api_key
-      - DB_NAME=contract
-      - STATISTICS_MIN_SAMPLE_SIZE=30
+      - DB_NAME=game
     secrets:
       - db_username
       - db_password
@@ -40,12 +39,12 @@ services:
         delay: 5s
       replicas: 2
 
-  postgres-contract:
+  postgres-game:
     image: postgres:14.5
     volumes:
       - dbdata:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=contract
+      - POSTGRES_DB=game
       - POSTGRES_USER_FILE=/run/secrets/db_username
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
       - PGDATA=/var/lib/postgresql/data

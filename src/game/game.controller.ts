@@ -1,4 +1,11 @@
-import { Controller, HttpStatus, Logger, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import {
   ApiOperation,
@@ -7,9 +14,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SimpleEquationGameResponseDto } from '../dto/simple-equation-game-response.dto';
-import { ContractIdParam } from '../dto/contract-id.param';
 import { plainToInstance } from 'class-transformer';
 import { SimpleEquationGeneratorService } from './simple-equation-generator/simple-equation-generator.service';
+import { GameEntity } from '../entities/game.entity';
 
 @ApiSecurity('api-key')
 @ApiTags('game')
@@ -20,6 +27,31 @@ export class GameController {
     private readonly gameService: GameService,
     private readonly simpleEquationGeneratorService: SimpleEquationGeneratorService,
   ) {}
+
+  /**
+   * Fetch a game given its id.
+   * @param gameId
+   */
+  @ApiOperation({ summary: 'Fetch all simple equation game.' })
+  @Get('simple')
+  async getAllSimpleEquationGame(): Promise<GameEntity[] | null> {
+    // todo pagination
+    return await this.gameService.findAll();
+  }
+
+  /**
+   * Fetch a game given its id.
+   * @param gameId
+   */
+  @ApiOperation({
+    summary: 'Fetch a specific simple equation game given its id.',
+  })
+  @Get('simple/:gameId')
+  async getSimpleEquationGame(
+    @Param('gameId') gameId: string,
+  ): Promise<GameEntity | null> {
+    return await this.gameService.findOne(gameId);
+  }
 
   /**
    * Create a new simple equation game.
@@ -43,9 +75,6 @@ export class GameController {
 
   /**
    * Update an existing contract by id.
-   * @param params {ContractIdParam}
-   * @param updateContractDto
-   * @param res
    */
   // @ApiOperation({ summary: 'Update an existing contract by id.' })
   // @ApiBody({

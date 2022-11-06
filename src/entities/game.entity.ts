@@ -7,11 +7,21 @@ import {
 } from 'typeorm';
 
 export interface IGameEntity {
+  /**
+   * The source numbers which are given at the beginning of the game.
+   */
   source: number[];
+  /**
+   * The target number which must be crafted during the game.
+   */
   target: number;
+  /**
+   * An array holding the individual subsequent equations to solve the game.
+   */
+  possibleSolution: string[];
 }
 
-@Entity('Contract')
+@Entity('Game')
 export class GameEntity implements IGameEntity {
   @PrimaryGeneratedColumn('uuid')
   gameId: string;
@@ -20,6 +30,10 @@ export class GameEntity implements IGameEntity {
   source: number[];
   @Column('int', { nullable: false })
   target: number;
+  @Column('text', { array: true, nullable: false })
+  possibleSolution: string[];
+  @Column('text', { array: true, nullable: false })
+  operations: string[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   public createdAt!: Date;

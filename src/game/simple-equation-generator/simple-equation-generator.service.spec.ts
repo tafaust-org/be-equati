@@ -9,7 +9,9 @@ describe('SimpleEquationGeneratorService', () => {
       providers: [SimpleEquationGeneratorService],
     }).compile();
 
-    service = module.get<SimpleEquationGeneratorService>(SimpleEquationGeneratorService);
+    service = module.get<SimpleEquationGeneratorService>(
+      SimpleEquationGeneratorService,
+    );
   });
 
   it('should be defined', () => {
