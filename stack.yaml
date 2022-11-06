@@ -1,23 +1,23 @@
 version: "3.7"
 
 services:
-  caddy2:
-    image: caddy:2.5.2
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-    configs:
-      - source: Caddyfile-ehwplus
-        target: /etc/caddy/Caddyfile
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 5
-        delay: 5s
-      replicas: 1
+#  caddy2:
+#    image: caddy:2.5.2
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - caddy_data:/data
+#      - caddy_config:/config
+#    configs:
+#      - source: Caddyfile-ehwplus
+#        target: /etc/caddy/Caddyfile
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#        max_attempts: 5
+#        delay: 5s
+#      replicas: 1
 
   be-equati-game:
     image: ghcr.io/equati.-e/be-game:latest
