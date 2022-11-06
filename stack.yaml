@@ -20,7 +20,7 @@ services:
 #      replicas: 1
 
   be-equati-game:
-    image: ghcr.io/equati.-e/be-game:latest
+    image: ghcr.io/equati-de/be-game:latest
     ports:
       - "8080:8080"
     environment:
