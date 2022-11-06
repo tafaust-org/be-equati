@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   caddy2:
     image: caddy:2.5.2
@@ -18,39 +19,42 @@ services:
         delay: 5s
       replicas: 1
 
-  be-game:
-    image: ghcr.io/ehwplus/be-game:latest
+  be-equati-game:
+    image: ghcr.io/equati.-e/be-game:latest
     ports:
       - "8080:8080"
     environment:
       - APP_PORT=8080
-      - DB_HOST=postgres-contract
-      - DB_USER_FILE=/run/secrets/db_username
-      - DB_PASS_FILE=/run/secrets/db_password
-      - API_KEY_FILE=/run/secrets/contract_api_key
+      - DB_HOST=pg-equati-game
+      - DB_USER_FILE=/run/secrets/equati_db_username
+      - DB_PASS_FILE=/run/secrets/equati_db_password
+      - API_KEY_FILE=/run/secrets/equati_api_key
       - DB_NAME=game
     secrets:
-      - db_username
-      - db_password
+      - equati_db_username
+      - equati_db_password
+      - equati_api_key
     deploy:
       restart_policy:
         condition: on-failure
         max_attempts: 5
         delay: 5s
       replicas: 2
+      labels:
+        - "TODO"
 
-  postgres-game:
+  pg-equati-game:
     image: postgres:14.5
     volumes:
       - dbdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=game
-      - POSTGRES_USER_FILE=/run/secrets/db_username
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_USER_FILE=/run/secrets/equati_db_username
+      - POSTGRES_PASSWORD_FILE=/run/secrets/equati_db_password
       - PGDATA=/var/lib/postgresql/data
     secrets:
-      - db_username
-      - db_password
+      - equati_db_username
+      - equati_db_password
     deploy:
       restart_policy:
         condition: on-failure
@@ -63,11 +67,11 @@ services:
       - "5555:80"
     environment:
       - PGADMIN_DEFAULT_EMAIL=mail@thomas-hesse.eu
-      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_default_password
+      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/equati_pgadmin_default_password
     secrets:
-      - pgadmin_default_password
+      - equati_pgadmin_default_password
     volumes:
-      - pgadmin_data:/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     deploy:
       restart_policy:
         condition: on-failure
@@ -87,23 +91,23 @@ services:
         delay: 15s
       replicas: 1
 
-configs:
-  Caddyfile-ehwplus:
-    external: true
+#configs:
+#  Caddyfile-ehwplus:
+#    external: true
 
 secrets:
-  db_username:
+  equati_db_username:
     external: true
-  db_password:
+  equati_db_password:
     external: true
-  pgadmin_default_password:
+  equati_pgadmin_default_password:
     external: true
-  contract_api_key:
+  equati_api_key:
     external: true
 
 volumes:
-  caddy_data:
-  caddy_config:
   dbdata:
   pgadmin_data:
   grafana_data:
+#  caddy_data:
+#  caddy_config:
