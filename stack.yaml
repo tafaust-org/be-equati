@@ -30,10 +30,12 @@ services:
       - DB_PASS_FILE=/run/secrets/equati_db_password
       - API_KEY_FILE=/run/secrets/equati_api_key
       - DB_NAME=game
+      - HTPPASSWD=/run/secrets/equati_api_htpasswd
     secrets:
       - equati_db_username
       - equati_db_password
       - equati_api_key
+      - equati_api_htpasswd
     deploy:
       restart_policy:
         condition: on-failure
@@ -41,7 +43,25 @@ services:
         delay: 5s
       replicas: 2
       labels:
-        - "TODO"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.enable=true"
+        # middleware
+        - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.test-auth.basicauth.users=${HTPPASSWD}"
+        # web
+        - "traefik.http.routers.equati-web.entrypoints=web"
+        - "traefik.http.routers.equati-web.middlewares=redirect-https@docker"
+        - "traefik.http.routers.equati-web.rule=Host(`api.equati.de`)"
+        - "traefik.http.routers.equati-web.service=equati-api-service"
+        - "traefik.http.routers.equati-web.tls=false"
+        # websecure
+        - "traefik.http.routers.equati-websecure.entrypoints=websecure"
+        - "traefik.http.routers.equati-websecure.rule=Host(`api.equati.de`)"
+        - "traefik.http.routers.equati-websecure.service=equati-api-service"
+        - "traefik.http.routers.equati-websecure.tls=true"
+        - "traefik.http.routers.equati-websecure.tls.certresolver=ionos"
+        # service
+        - "traefik.http.services.equati-api-service.loadbalancer.server.port=8080"
 
   pg-equati-game:
     image: postgres:14.5
@@ -91,9 +111,10 @@ services:
         delay: 15s
       replicas: 1
 
-#configs:
-#  Caddyfile-ehwplus:
-#    external: true
+networks:
+  equati_api:
+    external: false
+    driver: overlay
 
 secrets:
   equati_db_username:
@@ -104,10 +125,10 @@ secrets:
     external: true
   equati_api_key:
     external: true
+  equati_api_htpasswd:
+    external: true
 
 volumes:
   dbdata:
   pgadmin_data:
   grafana_data:
-#  caddy_data:
-#  caddy_config:

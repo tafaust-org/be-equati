@@ -1,7 +1,7 @@
 {
-  "name": "be-contract",
+  "name": "be-game",
   "version": "1.0.1",
-  "description": "EHW+ contract statistics backend",
+  "description": "Equati game backend",
   "author": "Thomas Hesse",
   "private": true,
   "license": "",

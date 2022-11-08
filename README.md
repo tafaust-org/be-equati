@@ -1,6 +1,6 @@
 # backend
 
-This service handles all business logic related to contract analytics.
+This service handles all business logic related to equati game generations and serving.
 
 ## Installation
 
