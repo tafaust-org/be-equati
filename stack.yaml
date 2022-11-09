@@ -7,15 +7,15 @@ services:
       - equati_api
       - traefik-public
     ports:
-      - "8080:8080"
+      - "33333:33333"
     environment:
-      - APP_PORT=8080
+      - APP_PORT=33333
       - DB_HOST=pg-equati-game
       - DB_USER_FILE=/run/secrets/equati_db_username
       - DB_PASS_FILE=/run/secrets/equati_db_password
       - API_KEY_FILE=/run/secrets/equati_api_key
       - DB_NAME=game
-      - HTPPASSWD=/run/secrets/equati_api_htpasswd
+      - HTPASSWD=/run/secrets/equati_api_htpasswd
     secrets:
       - equati_db_username
       - equati_db_password
@@ -32,7 +32,7 @@ services:
         - "traefik.enable=true"
         # middleware
         - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
-        - "traefik.http.middlewares.test-auth.basicauth.users=${HTPPASSWD}"
+        - "traefik.http.middlewares.test-auth.basicauth.users=${HTPASSWD}"
         # web
         - "traefik.http.routers.equati-web.entrypoints=web"
         - "traefik.http.routers.equati-web.middlewares=redirect-https@docker"
@@ -46,7 +46,7 @@ services:
         - "traefik.http.routers.equati-websecure.tls=true"
         - "traefik.http.routers.equati-websecure.tls.certresolver=ionos"
         # service
-        - "traefik.http.services.equati-api-service.loadbalancer.server.port=8080"
+        - "traefik.http.services.equati-api-service.loadbalancer.server.port=33333"
 
   pg-equati-game:
     image: postgres:14.5
@@ -115,6 +115,8 @@ networks:
   equati_api:
     external: false
     driver: overlay
+  traefik-public:
+    external: true
 
 secrets:
   equati_db_username:
