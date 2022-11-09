@@ -76,6 +76,9 @@ services:
       - equati_db_username
       - equati_db_password
     deploy:
+      placement:
+        constraints:
+          - node.hostname == docker0
       restart_policy:
         condition: on-failure
         max_attempts: 3
@@ -93,6 +96,9 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     deploy:
+      placement:
+        constraints:
+          - node.hostname == docker0
       restart_policy:
         condition: on-failure
         max_attempts: 3
@@ -105,6 +111,9 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     deploy:
+      placement:
+        constraints:
+          - node.hostname == docker0
       restart_policy:
         condition: on-failure
         max_attempts: 3
