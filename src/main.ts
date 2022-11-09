@@ -13,7 +13,6 @@ import {
   CorsOptionsDelegate,
 } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigService } from '@nestjs/config';
-import { ApiKeyGuard } from './guards/api-key.guard';
 
 async function bootstrap() {
   const appOptions: NestApplicationOptions = {};
@@ -29,10 +28,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(validationOptions));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableVersioning();
-  app.setGlobalPrefix('/api');
 
   const config: ConfigService = app.get(ConfigService);
   const port: number = config.get<number>('APP_PORT') ?? 3000;
+  const isProd: boolean = config.get<string>('NODE_ENV') === 'production';
+
+  // remove `/api` path prefix for any route (we only serve the api)
+  const pathPrefix = isProd ? '' : '/api';
+  app.setGlobalPrefix(pathPrefix);
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const pjson = require('../package.json');
@@ -53,14 +56,14 @@ async function bootstrap() {
       },
       'api-key',
     );
-  if (config.get<string>('NODE_ENV') !== 'production') {
+  if (!isProd) {
     swaggerConfig.addServer(`http://localhost:${port}`);
   }
   swaggerConfig.addServer('https://api.equati.de');
 
   const document = SwaggerModule.createDocument(app, swaggerConfig.build());
-  SwaggerModule.setup('api', app, document);
-  if (config.get<string>('NODE_ENV') !== 'production') {
+  SwaggerModule.setup(pathPrefix, app, document);
+  if (!isProd) {
     fs.writeFileSync(__dirname + '/../swagger.json', JSON.stringify(document));
   }
   await app.listen(port);
