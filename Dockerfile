@@ -53,4 +53,5 @@ EXPOSE $APP_PORT
 ENTRYPOINT [ "/sbin/tini", "--", "./docker-entrypoint.sh" ]
 
 USER $USER
-CMD [ "node", "-r", "./.pnp.cjs", "./dist/main" ]
+CMD [ "node", "./dist/main" ]
+#CMD [ "node", "-r", "./.pnp.cjs", "./dist/main" ]
