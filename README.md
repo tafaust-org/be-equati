@@ -80,4 +80,4 @@ to revert all migrations.
 
 
 ## Owner
-Thomas Hesse
+Thomas Faust
